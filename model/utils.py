@@ -41,14 +41,14 @@ class TaskType(Enum):
     TOKEN_CLASSIFICATION = 1,
     SEQUENCE_CLASSIFICATION = 2,
     QUESTION_ANSWERING = 3,
-    MULTIPLE_CHOICE = 4
+    MULTIPLE_CHOICE = 4,
 
 PREFIX_MODELS = {
     "bert": {
         TaskType.TOKEN_CLASSIFICATION: BertPrefixForTokenClassification,
         TaskType.SEQUENCE_CLASSIFICATION: BertPrefixForSequenceClassification,
         TaskType.QUESTION_ANSWERING: BertPrefixForQuestionAnswering,
-        TaskType.MULTIPLE_CHOICE: BertPrefixForMultipleChoice
+        TaskType.MULTIPLE_CHOICE: BertPrefixForMultipleChoice,
     },
     "roberta": {
         TaskType.TOKEN_CLASSIFICATION: RobertaPrefixForTokenClassification,
@@ -140,7 +140,6 @@ def get_model(model_args, task_type: TaskType, config: AutoConfig, fix_bert: boo
         total_param = all_param - bert_param
         print('***** total param is {} *****'.format(total_param))
     return model
-
 
 def get_model_deprecated(model_args, task_type: TaskType, config: AutoConfig, fix_bert: bool = False):
     if model_args.prefix:

@@ -1,6 +1,0 @@
-torch
-deepspeed
-sentencepiece
-tensorboardX
-datasets
-transformers

@@ -1,1 +1,0 @@
-from .sincos2d import get_2d_sincos_pos_embed
