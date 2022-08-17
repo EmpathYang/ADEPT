@@ -16,7 +16,7 @@ An illustration of how debiasing works using **ADEPT** and for downstream tasks:
 
 We conduct experiments on the **bert-large-uncased** pretrained model from HuggingFace. By using **ADEPT**, we need only train 1.97M parameters when prompt-tuning with 40 prompt tokens, orders of magnitude smaller than the 335M parameters required for finetuning.
 
-We provide bash scripes and codes to replicate our findings. Our environment is:
+We provide bash scripts and codes to replicate our findings. Our environment is:
 
 * Ubuntu servers with NVIDIA GeForce RTX 3090 (24G) GPUs
 * cuda 11.1
