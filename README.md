@@ -68,3 +68,35 @@ Plot word correlation:
 ```bash
 bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
 ```
+
+### Visualization:
+
+With debiased model and sampled sentences, we plot words' correlation.
+
+#### Gender Domin:
+
+![](figures/Figure2-a.png)
+
+(a) **original**
+
+![](figures/Figure2-b.png)
+
+(b) **DPCE**
+
+![](figures/Figure2-c.png)
+
+(c) **ADEPT-finetuning**
+
+![](figures/Figure2-d.png)
+
+(d) **ADEPT**
+
+#### Religion Domin:
+
+![](figures/Figure3-a.png)
+
+(a) **original**
+
+![](figures/Figure3-b.png)
+
+(b) **ADEPT**
