@@ -58,13 +58,13 @@ Debias:
 bash ./debias.sh bert 0 ADEPT gender
 ```
 
-Preprocess corpus for plotting word correlation (for better visualizating pairwise words' correlation, we highly suggest that you choose a large corpus, like a subset of **BookCorpus** sampled with function `sample_sentences_from_bookcorpus` in `utils.py`, because we have set sentence threshold for a word if it is to be plotted):
+Preprocess corpus for plotting words' correlation (for better visualizating pairwise words' correlation, we highly suggest that you choose a large corpus, like a subset of **BookCorpus** sampled with function `sample_sentences_from_bookcorpus` in `utils.py`, because we have set sentence threshold for a word if it is to be plotted):
 
 ```bash
 bash ./preprocess_plot_word_correlation.sh bert 0 gender [corpus_path]
 ```
 
-Plot word correlation:
+Plot words' correlation:
 
 ```bash
 bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
