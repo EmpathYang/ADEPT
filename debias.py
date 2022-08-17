@@ -430,10 +430,10 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
                 if args.KL_divergence:
                     _all_layer_hiddens = torch.softmax(all_layer_hiddens, dim=-1)
                     _all_original_hiddens = torch.softmax(all_original_hiddens, dim=-1)
-                    loss += KL_divergence(_all_layer_hiddens, _all_original_hiddens)
+                    loss += KL_divergence(_all_original_hiddens, _all_layer_hiddens)
                     _all_layer_hiddens = torch.softmax(-all_layer_hiddens, dim=-1)
                     _all_original_hiddens = torch.softmax(-all_original_hiddens, dim=-1)
-                    loss += KL_divergence(_all_layer_hiddens, _all_original_hiddens)
+                    loss += KL_divergence(_all_original_hiddens, _all_layer_hiddens)
                 else:
                     loss += criterion_ms(all_layer_hiddens, all_original_hiddens, 3)
                 loss *= beta
