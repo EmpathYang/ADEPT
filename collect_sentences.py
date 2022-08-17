@@ -2,8 +2,9 @@ import argparse
 import regex as re
 import nltk
 import torch
-from transformers import *
+from transformers import BertTokenizer, RobertaTokenizer
 import random
+from tqdm import tqdm
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -34,7 +35,7 @@ def prepare_tokenizer(args):
     return tokenizer
 
 def main(args):
-    SUPERVISED_ENTITIES = ['Amy', 'Joan', 'Lisa', 'Sarah', 'Diana', 'Kate', 'Ann', 'Donna', 'John', 'Paul', 'Mike', 'Kevin', 'Steve', 'Greg', 'Jeff', 'Bill', 'executive', 'management', 'professional', 'corporation', 'salary', 'office', 'business', 'career', 'home', 'parents', 'children', 'family', 'cousins', 'marriage', 'wedding', 'relatives', 'math', 'algebra', 'geometry', 'calculus', 'equations', 'computation', 'numbers', 'addition', 'poetry', 'art', 'dance', 'literature', 'novel', 'symphony', 'drama', 'sculpture', 'science', 'technology', 'physics', 'chemistry', 'Einstein', 'NASA', 'experiment', 'astronomy', 'Shakespeare']
+    SUPERVISED_ENTITIES = []
     supervised_entities = [w.lower() for w in SUPERVISED_ENTITIES]
     entity_count = {}
 
@@ -48,7 +49,7 @@ def main(args):
     sequential_l = []
     attributes_l = []
     all_attributes_set = set()
-    for attribute in args.attributes:
+    for attribute in args.attribute_words:
         l = [word.strip() for word in open(attribute)]
         sequential_l.append(l)
         attributes_l.append(set(l))
@@ -62,7 +63,7 @@ def main(args):
     attributes_examples = [{} for _ in range(len(attributes_l))]
     attributes_labels = [{} for _ in range(len(attributes_l))]
 
-    for orig_line in data:
+    for orig_line in tqdm(data, desc='sentence'):
         neutral_flag = True
         orig_line = orig_line.strip()
         if len(orig_line) < 1:
@@ -179,6 +180,10 @@ def main(args):
         print('neutral:', len(neutral_examples), file=wf)
         for i, examples in enumerate(attributes_examples):
             print(f'attributes{i}:', len(examples), file=wf)
+        print(entity_count)
+        print('neutral:', len(neutral_examples))
+        for i, examples in enumerate(attributes_examples):
+            print(f'attributes{i}:', len(examples))
 
     data = {'attributes_examples': attributes_examples,
             'attributes_labels': attributes_labels,

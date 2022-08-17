@@ -5,7 +5,8 @@ import nltk
 import torch
 import csv
 
-from transformers import *
+from transformers import BertTokenizer, RobertaTokenizer
+from tqdm import tqdm
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -13,8 +14,8 @@ def get_args():
 
     parser.add_argument('--input', type=str, required=True,
                         help='Data')
-    parser.add_argument('--stereotypes', type=str)
-    parser.add_argument('--attributes', type=tp, required=True)
+    parser.add_argument('--neutral_words', type=str)
+    parser.add_argument('--attribute_words', type=tp, required=True)
     parser.add_argument('--output', type=str, required=True)
     parser.add_argument('--block_size', type=int, default=128)
     parser.add_argument('--model_type', type=str, required=True,
@@ -35,7 +36,7 @@ def prepare_tokenizer(args):
 
 def main(args):
     data = [l.strip() for l in open(args.input)]
-    stereotypes = [word.strip() for word in open(args.stereotypes)]
+    stereotypes = [word.strip() for word in open(args.neutral_words)]
     stereotype_set = set(stereotypes)
 
     pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
@@ -43,7 +44,7 @@ def main(args):
     sequential_l = []
     attributes_l = []
     all_attributes_set = set()
-    for attribute in args.attributes:
+    for attribute in args.attribute_words:
         l = [word.strip() for word in open(attribute)]
         sequential_l.append(l)
         attributes_l.append(set(l))
@@ -55,7 +56,7 @@ def main(args):
     words_examples = [[] for _ in range(len(words_list))]
     words_indexes = [[] for _ in range(len(words_list))]
 
-    for line in data:
+    for line in tqdm(data):
         neutral_flag = True
         line = line.strip()
         if len(line) < 1:

@@ -157,8 +157,8 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
     if args.local_rank in [-1, 0]:
         tb_writer = SummaryWriter()
 
-    args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
-    args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
+    args.train_batch_size = args.per_device_train_batch_size * max(1, args.n_gpu)
+    args.eval_batch_size = args.per_device_eval_batch_size * max(1, args.n_gpu)
 
     train_datasets = datasets['train']
     dev_datasets = datasets['dev']
@@ -227,7 +227,7 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
     logger.info("***** Running training *****")
     logger.info("Num examples = %d", train_example_num)
     logger.info("Num Epochs = %d", args.num_train_epochs)
-    logger.info("Instantaneous batch size per GPU = %d", args.per_gpu_train_batch_size)
+    logger.info("Instantaneous batch size per GPU = %d", args.per_device_train_batch_size)
     logger.info(
         "Total train batch size (w. parallel, distributed & accumulation) = %d",
         args.train_batch_size
@@ -408,11 +408,17 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
             if 'neutral' != key:
                 target_original_hiddens = torch.sum(target_original_hiddens * onehot, 1).unsqueeze(1) / labels.size(1)
             else:
-                attributes_hiddens = torch.cat(list(attributes_hiddens.values()), dim=0)
-
+                if args.algorithm == 'ADEPT' or args.algorithm == 'ADEPT-finetuning':
+                    attributes_hiddens = torch.cat(list(attributes_hiddens.values()), dim=0)
+                elif args.algorithm == 'DPCE':
+                    attributes_hiddens = {key: value.expand(target_layer_hiddens.size(0),
+                                                        1,
+                                                        value.size(1),
+                                                        value.size(2))
+                                      for key, value in attributes_hiddens.items()}
         if args.algorithm == 'ADEPT' or args.algorithm == 'ADEPT-finetuning':
+            loss = 0
             if 'neutral' == key:
-                loss = 0
                 relative_distance = calculate_group_to_one_relative_distance_asymmetric(target_layer_hiddens, attributes_hiddens)
                 relative_distance_shape0 = relative_distance.shape[0]
                 for i in range(relative_distance_shape0):
@@ -421,7 +427,15 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
                 loss /= relative_distance_shape0 * (relative_distance_shape0 - 1) / 2
                 loss *= alpha
             else:
-                loss = KL_divergence(all_layer_hiddens, all_original_hiddens)
+                if args.KL_divergence:
+                    _all_layer_hiddens = torch.softmax(all_layer_hiddens, dim=-1)
+                    _all_original_hiddens = torch.softmax(all_original_hiddens, dim=-1)
+                    loss += KL_divergence(_all_layer_hiddens, _all_original_hiddens)
+                    _all_layer_hiddens = torch.softmax(-all_layer_hiddens, dim=-1)
+                    _all_original_hiddens = torch.softmax(-all_original_hiddens, dim=-1)
+                    loss += KL_divergence(_all_layer_hiddens, _all_original_hiddens)
+                else:
+                    loss += criterion_ms(all_layer_hiddens, all_original_hiddens, 3)
                 loss *= beta
         elif args.algorithm == 'DPCE':
             if 'neutral' == key:
@@ -434,7 +448,6 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
             else:
                 loss = criterion_ms(all_layer_hiddens, all_original_hiddens, 3)
                 loss *= beta
-
         return loss
 
     def evaluate(model, attributes_hiddens, dev_dataloaders, prefix=""):
@@ -444,7 +457,7 @@ def train(args, data, datasets, model: PreTrainedModel, original_model, tokenize
         if args.local_rank in [-1, 0]:
             os.makedirs(eval_output_dir, exist_ok=True)
 
-        args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
+        args.eval_batch_size = args.per_device_eval_batch_size * max(1, args.n_gpu)
         # Note that DistributedSampler samples randomly
 
         # multi-gpu evaluate

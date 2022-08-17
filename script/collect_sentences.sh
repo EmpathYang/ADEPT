@@ -4,16 +4,16 @@ bias=$3
 ab_test=$4
 block_size=128
 
-if [ $model_type -eq 'bert' ]; then
+if [ $model_type == 'bert' ]; then
     model_name_or_path=bert-large-uncased
-elif [ $model_type -eq 'roberta' ]; then
+elif [ $model_type == 'roberta' ]; then
     model_name_or_path=roberta-large
 fi
 
-if [ $bias -eq 'gender']; then
-    attribute_words='../data/female_seat.txt,../data/male_seat.txt'
-elif [$bias -eq 'religion']; then
-    attribute_words='../data/jewish.txt,../data/christian.txt,../data/muslim.txt'
+if [ $bias == 'gender' ]; then
+    attribute_words='../data/female.txt,../data/male.txt'
+elif [ $bias == 'religion' ]; then
+    attribute_words='../data/judaism.txt,../data/christianity.txt,../data/islam.txt'
 fi
 
 AB_TEST_TYPE_LIST=(
@@ -26,7 +26,7 @@ AB_TEST_TYPE_LIST=(
     'final'
     )
 
-if [ $ab_test -nq 'all' ]; then
+if [ $ab_test != 'all' ]; then
     OUTPUT_DIR=../sentences_collection/$model_name_or_path/$bias/$ab_test
 
     rm -r $OUTPUT_DIR
@@ -34,22 +34,23 @@ if [ $ab_test -nq 'all' ]; then
     echo $model_type $bias $ab_test
 
     python -u ../collect_sentences.py --input ../data/$data \
-                            --neutral_words ../data/neutral_seat.txt \
+                            --neutral_words ../data/neutral.txt \
                             --attribute_words $attribute_words \
                             --output $OUTPUT_DIR \
                             --block_size $block_size \
                             --model_type $model_type \
                             --ab_test_type $ab_test \
+
 else
     for ab_test_type in ${AB_TEST_TYPE_LIST[@]}; do
-        OUTPUT_DIR=../sentences_collection/$model_name_or_path/$bias/$ab_test_type
+        OUTPUT_DIR=../sentence_collection/$model_name_or_path/$bias/$ab_test_type
 
         rm -r $OUTPUT_DIR
         mkdir -p $OUTPUT_DIR
         echo $model_type $bias $ab_test_type
 
         python -u ../collect_sentences.py --input ../data/$data \
-                                --neutral_words ../data/neutral_seat.txt \
+                                --neutral_words ../data/neutral.txt \
                                 --attribute_words $attribute_words \
                                 --output $OUTPUT_DIR \
                                 --block_size $block_size \
@@ -57,4 +58,4 @@ else
                                 --ab_test_type $ab_test_type \
 
     done
-elif
+fi

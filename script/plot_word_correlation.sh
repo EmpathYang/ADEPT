@@ -1,22 +1,26 @@
 model_type=$1
 gpu=$2
-tuning_type=$3 # prompt_tuning finetuning
+algorithm=$3 # ADEPT ADEPT-finetuning DPCE
 bias=$4 # gender religion
 model_name_or_path=$5
 seed=42
 
-if [ $model_type = 'bert' ]; then
+if [ $model_type == 'bert' ]; then
     local_model_name_or_path=bert-large-uncased
-elif [ $model_type = 'roberta' ]; then
+elif [ $model_type == 'roberta' ]; then
     local_model_name_or_path=roberta-large
 fi
 
-PLOT_DATA=../sentences_collection/$local_model_name_or_path/$bias/word_correlation/word_data.bin
-OUTPUT_DIR=../debiased_models/$seed/$local_model_name_or_path/$algorithm/$bias
+if [ $algorithm == 'ADEPT' ]; then
+    tuning_type=prompt_tuning
+elif [ $algorithm == 'ADEPT-finetuning' -o $algorithm == 'DPCE' ]; then
+    tuning_type=finetuning
+fi
 
-rm -r $OUTPUT_DIR
+PLOT_DATA=../sentence_collection/$local_model_name_or_path/$bias/word_correlation/word_data.bin
+OUTPUT_DIR=../debiased_models/$seed/$local_model_name_or_path/$algorithm/$bias/word_correlation
 
-echo $model_type $tag $bias $gpu $seed
+echo $model_type $gpu $algorithm $bias $seed
 
 CUDA_VISIBLE_DEVICES=$gpu python ../plot_word_correlation.py \
     --bias $bias \

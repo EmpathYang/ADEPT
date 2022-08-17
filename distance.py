@@ -1,3 +1,4 @@
+from cmath import isnan
 from numpy import double
 from regex import P
 import torch
@@ -66,11 +67,12 @@ def calculate_group_to_one_relative_distance_asymmetric(neutral_batch_data, attr
     return new_batch_data
 
 def KL_divergence(p_distribution, q_distribution):
-    batch_size = p_distribution.shape[0]
+    sum_total = torch.sum(p_distribution)
     _p = p_distribution[torch.where((p_distribution!=0)&(q_distribution!=0))]
     _q = q_distribution[torch.where((p_distribution!=0)&(q_distribution!=0))]
     result = _p * torch.log2(_p / _q)
-    return torch.sum(result) / batch_size
+    result = torch.sum(result) / sum_total
+    return result
 
 def JS_divergence(p_distribution, q_distribution):
     m = 0.5 * (p_distribution + q_distribution)

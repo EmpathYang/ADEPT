@@ -92,6 +92,9 @@ class OtherArguments:
     model_type: str = field(
         metadata={"help": "The model architecture to be trained or fine-tuned."}
     )
+    weighted_loss: List[float] = field(
+        metadata={"help": "Set lambda (hyperparameter)."}
+    )
     block_size: int = field(
         default=-1, 
         metadata={"help": "Optional input sequence length after tokenization."
@@ -107,10 +110,6 @@ class OtherArguments:
         metadata={"help": "Debias the first, last or all layers of a PLM.",
         "choices": ['all', 'first', 'last']}
     )
-    weighted_loss: List[float] = field(
-        default=[1.0, 1.0],
-        metadata={"help": "Set lambda (hyperparameter)."}
-    )
     perplexity: int = field(
         default=15,
         metadata={"help":"Set perplecity (hyperparameter)."}
@@ -119,11 +118,18 @@ class OtherArguments:
         default=1000,
         metadata={"help": "Set development data size."}
     )
+    KL_divergence: bool = field(
+        default=False,
+        metadata={
+            "help": "Will use KL divergence to measure output change."
+        },
+    )
 
 def get_args():
     parser = HfArgumentParser((ModelArguments, TrainingArguments, OtherArguments))
     model_args, training_args, other_args = parser.parse_args_into_dataclasses()
     args = argparse.Namespace(**vars(training_args), **vars(other_args))
+    args.model_name_or_path = model_args.model_name_or_path
 
     if (
         os.path.exists(args.output_dir)

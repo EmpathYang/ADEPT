@@ -55,7 +55,7 @@ def get_args():
     parser.add_argument("--tokenizer_name", default=None, type=str, help="Optional pretrained tokenizer name or path if not the same as model_name_or_path. If both are None, initialize a new tokenizer.")
     parser.add_argument("--cache_dir", default=None, type=str, help="Optional directory to store the pre-trained models downloaded from s3 (instead of the default one)")
     parser.add_argument("--block_size", default=-1, type=int, help="Optional input sequence length after tokenization." "The training dataset will be truncated in block of this size for training." "Default to the model max input length for single sentence inputs (take into account special tokens).")
-    parser.add_argument("--batch_size", default=4, type=int, help="Batch size per vector.")
+    parser.add_argument("--batch_size", default=2, type=int, help="Batch size per vector.")
     parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
     parser.add_argument("--overwrite_output_dir", action="store_true", help="Overwrite the content of the output directory")
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
@@ -148,8 +148,8 @@ def create_dataloader(args, datasets, tokenizer):
 
     for key, dataset in datasets.items():
         example_num += len(dataset)
-        dataloaders[key] = iter(DataLoader(dataset, batch_size=args.vector_batch_size, collate_fn=collate, shuffle=False))
-        word_list += [key for _ in range(int(args.threshold / args.vector_batch_size))]
+        dataloaders[key] = iter(DataLoader(dataset, batch_size=args.batch_size, collate_fn=collate, shuffle=False))
+        word_list += [key for _ in range(int(args.threshold / args.batch_size))]
 
     return dataloaders, example_num, word_list
 
@@ -163,17 +163,19 @@ def calculate(args, data, datasets, model: PreTrainedModel, tokenizer: PreTraine
     model.eval()
 
     def get_hiddens_of_model(input, input_attention_mask):
-        model.zero_grad()
-        if args.model_type == 'roberta':
-            if args.tuning_type == 'prompt_tuning':
-                hiddens = model(input, input_attention_mask).hidden_states
-            elif args.tuning_type == 'finetuning':
-                hiddens = model.roberta(input).hidden_states
-        elif args.model_type == 'bert':
-            if args.tuning_type == 'prompt_tuning':
-                hiddens = model(input, input_attention_mask).hidden_states
-            elif args.tuning_type == 'finetuning':
-                hiddens = model.bert(input).hidden_states
+        if hasattr(torch.cuda, 'empty_cache'):
+            torch.cuda.empty_cache()
+        with torch.no_grad():
+            if args.model_type == 'roberta':
+                if args.tuning_type == 'prompt_tuning':
+                    hiddens = model(input, input_attention_mask).hidden_states
+                elif args.tuning_type == 'finetuning':
+                    hiddens = model.roberta(input).hidden_states
+            elif args.model_type == 'bert':
+                if args.tuning_type == 'prompt_tuning':
+                    hiddens = model(input, input_attention_mask).hidden_states
+                elif args.tuning_type == 'finetuning':
+                    hiddens = model.bert(input).hidden_states
 
         return hiddens
 
