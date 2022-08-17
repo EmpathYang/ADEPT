@@ -40,7 +40,7 @@ pip install -r requirements.txt
 
 ### Data
 
-We've already included words list for attributes in the data folder, so there is no need to acquire them from other resources. As for larger corpora, you can download News-Commentary v15 [here](https://data.statmt.org/news-commentary/v15/documents.tgz) and Hugging Face's BookCorpus replica [here](https://storage.googleapis.com/huggingface-nlp/datasets/bookcorpus/bookcorpus.tar.bz2), and place them under the directory `./data`. New-Commentary alone can support debiasing gender. You may need to create a new text file by combining the two corpora mentioned above so that there are sufficient sentences for debiasing religion. 
+We've already included word lists for attributes in the data folder, so there is no need to acquire them from other resources. As for larger corpora, you can download News-Commentary v15 [here](https://data.statmt.org/news-commentary/v15/documents.tgz) and Hugging Face's BookCorpus replica [here](https://storage.googleapis.com/huggingface-nlp/datasets/bookcorpus/bookcorpus.tar.bz2). New-Commentary alone can support debiasing gender. You may need to create a new text file by combining the two corpora mentioned above so that there are sufficient sentences for debiasing religion. 
 
 ### Experiments
 
@@ -70,8 +70,6 @@ bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
 ```
 
 ### Visualization:
-
-With debiased model and sampled sentences, we plot words' correlation.
 
 #### Gender Domin:
 
