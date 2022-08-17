@@ -35,6 +35,7 @@ Install pytorch and python packages:
 
 ```bash
 conda install -n pt2 pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cudatoolkit=11.0 -c pytorch
+cd ADEPT
 pip install -r requirements.txt
 ```
 
@@ -47,7 +48,7 @@ We've already included word lists for attributes in the data folder, so there is
 Collect sentences:
 
 ```bash
-cd ADEPT/script
+cd script
 bash ./collect_sentences.sh bert [corpus_path] gender final
 ```
 
