@@ -1,6 +1,6 @@
 # ADEPT
 
-Source code and data for *ADEPT: A DEbiasing PrompT Framework*.
+Source code and data for [*ADEPT: A DEbiasing PrompT Framework*](https://arxiv.org/abs/2211.05414) (**AAAI-23**).
 
 An illustration of how debiasing works using **ADEPT** and for downstream tasks:
 
@@ -14,7 +14,7 @@ An illustration of how debiasing works using **ADEPT** and for downstream tasks:
 
 ## Replication
 
-We conduct experiments on the **bert-large-uncased** pretrained model from HuggingFace. By using **ADEPT**, we need only train 1.97M parameters when prompt-tuning with 40 prompt tokens, orders of magnitude smaller than the 335M parameters required for finetuning.
+We conduct experiments on the [**bert-large-uncased**](https://huggingface.co/bert-large-uncased) pre-trained model from [HuggingFace](https://huggingface.co/). By using **ADEPT**, we need only train 1.97M parameters when prompt-tuning with 40 prompt tokens, orders of magnitude smaller than the 335M parameters required for finetuning.
 
 We provide bash scripts and codes to replicate our findings. Our environment is:
 
@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 ### Data
 
-We've already included word lists for attributes in the data folder, so there is no need to acquire them from other resources. As for larger corpora, you can download News-Commentary v15 [here](https://data.statmt.org/news-commentary/v15/documents.tgz) and Hugging Face's BookCorpus replica [here](https://storage.googleapis.com/huggingface-nlp/datasets/bookcorpus/bookcorpus.tar.bz2). New-Commentary alone can support debiasing gender. You may need to create a new text file by combining the two corpora mentioned above so that there are sufficient sentences for debiasing religion. 
+We've already included word lists for attributes in the `./data` folder, so there is no need to acquire them from other resources. As for larger corpora, you can download News-Commentary v15 [here](https://data.statmt.org/news-commentary/v15/documents.tgz) and Hugging Face's BookCorpus replica [here](https://storage.googleapis.com/huggingface-nlp/datasets/bookcorpus/bookcorpus.tar.bz2). New-Commentary alone can support gender debiasing. You may need to create a new text file by combining the two corpora mentioned above so that there are sufficient sentences for religion debiasing. 
 
 ### Experiments
 
@@ -58,7 +58,7 @@ Debias:
 bash ./debias.sh bert 0 ADEPT gender
 ```
 
-Preprocess corpus for plotting words' correlation (for better visualizating pairwise words' correlation, we highly suggest that you choose a large corpus, like a subset of **BookCorpus** sampled with function `sample_sentences_from_bookcorpus` in `utils.py`, because we have set sentence threshold for a word if it is to be plotted):
+Preprocess corpus for plotting words' correlation (for better visualizing pairwise words' correlation, we highly suggest that you choose a large corpus, like a subset of **BookCorpus** sampled with function `sample_sentences_from_bookcorpus` in `utils.py`, because we have set the minimum threshold for $len(S_m^{a(i)})$ if word $w_m^{a(i)}$ is to be plotted):
 
 ```bash
 bash ./preprocess_plot_word_correlation.sh bert 0 gender [corpus_path]
@@ -72,7 +72,7 @@ bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
 
 ### Visualization:
 
-#### Gender Domin:
+#### Gender:
 
 ![](figures/Figure2-a.png)
 
@@ -90,7 +90,7 @@ bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
 
 (d) **ADEPT**
 
-#### Religion Domin:
+#### Religion:
 
 ![](figures/Figure3-a.png)
 
