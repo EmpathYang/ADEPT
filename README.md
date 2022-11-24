@@ -102,6 +102,6 @@ bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
 
 ![](figures/Figure3-a.png)
 
-(b) **ADEPT**
+(b) **ADEPT**:
 
 ![](figures/Figure3-b.png)
