@@ -74,28 +74,34 @@ bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
 
 #### Gender:
 
+*We color neutral words beige, male words blue, and female words red.*
+
+(a) [**original**](https://huggingface.co/bert-large-uncased):
+
 ![](figures/Figure2-a.png)
 
-(a) **original**
+(b) [**DPCE**](https://arxiv.org/abs/2101.09523):
 
 ![](figures/Figure2-b.png)
 
-(b) **DPCE**
+(c) **ADEPT-finetuning**:
 
 ![](figures/Figure2-c.png)
 
-(c) **ADEPT-finetuning**
+(d) **ADEPT**:
 
 ![](figures/Figure2-d.png)
 
-(d) **ADEPT**
+
 
 #### Religion:
 
+*We color neutral words grey, Judaism words yellow, Christianity words blue, and Islam words green.*
+
+(a) [**original**](https://huggingface.co/bert-large-uncased):
+
 ![](figures/Figure3-a.png)
 
-(a) **original**
+(b) **ADEPT**
 
 ![](figures/Figure3-b.png)
-
-(b) **ADEPT**
