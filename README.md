@@ -55,7 +55,8 @@ bash ./collect_sentences.sh bert [corpus_path] gender final
 Debias:
 
 ```bash
-bash ./debias.sh bert 0 ADEPT gender
+bash ./debias.sh bert 0 ADEPT gender # for ADEPT
+bash ./debias.sh bert 0 DPCE gender # for DPCE
 ```
 
 Preprocess corpus for plotting words' correlation (for better visualizing pairwise words' correlation, we highly suggest that you choose a large corpus, like a subset of **BookCorpus** sampled with function `sample_sentences_from_bookcorpus` in `utils.py`, because we have set the minimum threshold for $len(S_m^{a(i)})$ if word $w_m^{a(i)}$ is to be plotted):
@@ -67,7 +68,8 @@ bash ./preprocess_plot_word_correlation.sh bert 0 gender [corpus_path]
 Plot words' correlation:
 
 ```bash
-bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path]
+bash ./plot_word_correlation.sh bert 0 ADEPT gender [model_name_or_path] # for ADEPT
+bash ./plot_word_correlation.sh bert 0 DPCE gender [model_name_or_path] # for DPCE
 ```
 
 ### Visualization:

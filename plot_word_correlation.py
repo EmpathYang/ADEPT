@@ -30,6 +30,7 @@ import numpy as np
 import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
 
 from utils import plot_word_correlation_gender, plot_word_correlation_religion
 from model.sequence_classification import BertPrefixForSequenceClassification
@@ -179,8 +180,9 @@ def calculate(args, data, datasets, model: PreTrainedModel, tokenizer: PreTraine
 
         return hiddens
 
+    print("Start extracting the hidden states for the words of forward pass.")
     words_hiddens = {word: [] for word in word_list}
-    for word in word_list:
+    for word in tqdm(word_list, desc="word list"):
         inputs, labels, inputs_attention_mask, _ = next(dataloaders[word])
         inputs = inputs.to(args.device)
         inputs_attention_mask = inputs_attention_mask.to(args.device)
